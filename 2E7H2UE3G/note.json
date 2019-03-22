@@ -1,0 +1,317 @@
+{
+  "paragraphs": [
+    {
+      "text": "case class LabResult(patientID: String, date: Long, labName: String, value: String)\ncase class Diagnostic(patientID: String, date: Long, icd9code: String, sequence: Int)\ncase class Medication(patientID: String, date: Long, medicine: String)\nabstract class VertexProperty extends Serializable\ncase class PatientProperty(patientID: String, sex: String, dob: String, dod: String) extends VertexProperty\ncase class LabResultProperty(testName: String) extends VertexProperty\ncase class DiagnosticProperty(icd9code: String) extends VertexProperty\ncase class MedicationProperty(medicine: String) extends VertexProperty\nabstract class EdgeProperty extends Serializable\ncase class SampleEdgeProperty(name: String \u003d \"Sample\") extends EdgeProperty\ncase class PatientLabEdgeProperty(labResult: LabResult) extends EdgeProperty\ncase class PatientDiagnosticEdgeProperty(diagnostic: Diagnostic) extends EdgeProperty\ncase class PatientMedicationEdgeProperty(medication: Medication) extends EdgeProperty\n",
+      "user": "anonymous",
+      "dateUpdated": "2019-03-10 17:41:28.664",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "defined class LabResult\ndefined class Diagnostic\ndefined class Medication\ndefined class VertexProperty\ndefined class PatientProperty\ndefined class LabResultProperty\ndefined class DiagnosticProperty\ndefined class MedicationProperty\ndefined class EdgeProperty\ndefined class SampleEdgeProperty\ndefined class PatientLabEdgeProperty\ndefined class PatientDiagnosticEdgeProperty\ndefined class PatientMedicationEdgeProperty\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1551048028897_1037185877",
+      "id": "20190224-224028_557650669",
+      "dateCreated": "2019-02-24 22:40:28.897",
+      "dateStarted": "2019-03-10 17:41:28.864",
+      "dateFinished": "2019-03-10 17:41:31.574",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "import org.apache.spark.sql.{ DataFrame, SparkSession }\n\nobject CSVHelper {\n  def loadCSVAsTable(spark: SparkSession, path: String, tableName: String): DataFrame \u003d {\n    val data \u003d spark.read.format(\"com.databricks.spark.csv\").\n      option(\"header\", \"true\").\n      option(\"mode\", \"DROPMALFORMED\").\n      option(\"delimiter\", \",\").\n      load(path)\n    data.createOrReplaceTempView(tableName)\n    data\n  }\n\n  def loadCSVAsTable(spark: SparkSession, path: String): DataFrame \u003d {\n    loadCSVAsTable(spark, path, inferTableNameFromPath(path))\n  }\n\n  private val pattern \u003d \"(\\\\w+)(\\\\.csv)?$\".r.unanchored\n\n  def inferTableNameFromPath(path: String): String \u003d path match {\n    case pattern(filename, extension) \u003d\u003e filename\n    case _ \u003d\u003e path\n  }\n}\n\nimport java.text.SimpleDateFormat\nimport org.apache.spark.rdd.RDD\n\nobject Main {\n    \n  def loadRddRawData(spark: SparkSession): (RDD[PatientProperty], RDD[Medication], RDD[LabResult], RDD[Diagnostic]) \u003d {\n    import spark.implicits._\n    val sqlContext \u003d spark.sqlContext\n\n    val dateFormat \u003d new SimpleDateFormat(\"yyyy-MM-dd\u0027T\u0027HH:mm:ssX\")\n\n    List(\"/mount/homework4/stu_code/data/PATIENT.csv\", \"/mount/homework4/stu_code/data/LAB.csv\", \"/mount/homework4/stu_code/data/DIAGNOSTIC.csv\", \"/mount/homework4/stu_code/data/MEDICATION.csv\")\n      .foreach(CSVHelper.loadCSVAsTable(spark, _))\n\n    // add logic to handle null values if needed\n    val patient \u003d sqlContext.sql(\n      \"\"\"\n        |SELECT subject_id, sex, dob, dod\n        |FROM PATIENT\n      \"\"\".stripMargin)\n      .map(\n          r \u003d\u003e PatientProperty(\n              r(0).toString, \n              r(1).toString,\n              r(2).toString, \n              if (r(3) !\u003d null) r(3).toString else \"\"\n        ))\n\n    val labResult \u003d sqlContext.sql(\n      \"\"\"\n        |SELECT subject_id, date, lab_name, value\n        |FROM LAB\n        |WHERE value IS NOT NULL and value \u003c\u003e \u0027\u0027\n      \"\"\".stripMargin)\n      .map(r \u003d\u003e LabResult(r(0).toString, r(1).toString.toLong, r(2).toString, r(3).toString))\n\n    val diagnostic \u003d sqlContext.sql(\n      \"\"\"\n        |SELECT subject_id, date, code, sequence\n        |FROM DIAGNOSTIC\n      \"\"\".stripMargin)\n      .map(r \u003d\u003e Diagnostic(r(0).toString, r(1).toString.toLong, r(2).toString, r(3).toString.toInt))\n\n    val medication \u003d sqlContext.sql(\n      \"\"\"\n        |SELECT subject_id, date, med_name\n        |FROM MEDICATION\n      \"\"\".stripMargin)\n      .map(r \u003d\u003e Medication(r(0).toString, r(1).toString.toLong, r(2).toString))\n\n    (patient.rdd, medication.rdd, labResult.rdd, diagnostic.rdd)\n\n  }\n\n}\n\n\nval (patientRdd, medicationRdd, labResultRdd, diagnosticRdd) \u003d Main.loadRddRawData(spark)\nprintln(patientRdd.count())\nprintln(medicationRdd.count())\nprintln(labResultRdd.count())\nprintln(diagnosticRdd.count())",
+      "user": "anonymous",
+      "dateUpdated": "2019-03-10 17:41:31.593",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "998\n154184\n547683\n9478\nimport org.apache.spark.sql.{DataFrame, SparkSession}\ndefined object CSVHelper\nimport java.text.SimpleDateFormat\nimport org.apache.spark.rdd.RDD\ndefined object Main\npatientRdd: org.apache.spark.rdd.RDD[PatientProperty] \u003d MapPartitionsRDD[188] at rdd at \u003cconsole\u003e:131\nmedicationRdd: org.apache.spark.rdd.RDD[Medication] \u003d MapPartitionsRDD[193] at rdd at \u003cconsole\u003e:131\nlabResultRdd: org.apache.spark.rdd.RDD[LabResult] \u003d MapPartitionsRDD[198] at rdd at \u003cconsole\u003e:131\ndiagnosticRdd: org.apache.spark.rdd.RDD[Diagnostic] \u003d MapPartitionsRDD[203] at rdd at \u003cconsole\u003e:131\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1551048553363_431196118",
+      "id": "20190224-224913_609762439",
+      "dateCreated": "2019-02-24 22:49:13.363",
+      "dateStarted": "2019-03-10 17:41:31.881",
+      "dateFinished": "2019-03-10 17:41:39.937",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "import org.apache.spark.graphx._\n\nval medicationVertices: RDD[(VertexId, VertexProperty)] \u003d medicationRdd\n    .map(_.medicine)\n    .distinct()\n    .map(medicineName \u003d\u003e (\n        medicineName.##.toLong, \n        MedicationProperty(medicineName).asInstanceOf[VertexProperty]\n    ))\nval labResultVertices: RDD[(VertexId, VertexProperty)] \u003d labResultRdd\n    .map(_.labName)\n    .distinct()\n    .map(labName \u003d\u003e (\n        labName.##.toLong, \n        LabResultProperty(labName).asInstanceOf[VertexProperty]\n    ))\nval diagnosticVertices: RDD[(VertexId, VertexProperty)] \u003d diagnosticRdd\n    .map(_.icd9code)\n    .distinct()\n    .map(diagnosticName \u003d\u003e (\n        diagnosticName.##.toLong, \n        DiagnosticProperty(diagnosticName).asInstanceOf[VertexProperty]\n    ))\n\nval graphVertices: RDD[(VertexId, VertexProperty)] \u003d patientRdd.map(\n    patient \u003d\u003e (patient.patientID.toLong, patient.asInstanceOf[VertexProperty])\n).union(\n    medicationVertices\n).union(\n    labResultVertices\n).union(\n    diagnosticVertices\n)\n\nprintln(medicationVertices.count())\nprintln(labResultVertices.count())\nprintln(diagnosticVertices.count())\nprintln(graphVertices.count())\n",
+      "user": "anonymous",
+      "dateUpdated": "2019-03-10 17:41:39.968",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "49\n226\n1592\n2865\nimport org.apache.spark.graphx._\nmedicationVertices: org.apache.spark.rdd.RDD[(org.apache.spark.graphx.VertexId, VertexProperty)] \u003d MapPartitionsRDD[208] at map at \u003cconsole\u003e:66\nlabResultVertices: org.apache.spark.rdd.RDD[(org.apache.spark.graphx.VertexId, VertexProperty)] \u003d MapPartitionsRDD[213] at map at \u003cconsole\u003e:73\ndiagnosticVertices: org.apache.spark.rdd.RDD[(org.apache.spark.graphx.VertexId, VertexProperty)] \u003d MapPartitionsRDD[218] at map at \u003cconsole\u003e:80\ngraphVertices: org.apache.spark.rdd.RDD[(org.apache.spark.graphx.VertexId, VertexProperty)] \u003d UnionRDD[222] at union at \u003cconsole\u003e:91\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1551048698774_114610389",
+      "id": "20190224-225138_1716422526",
+      "dateCreated": "2019-02-24 22:51:38.775",
+      "dateStarted": "2019-03-10 17:41:40.448",
+      "dateFinished": "2019-03-10 17:41:45.691",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "val patientMedicationEdges: RDD[Edge[EdgeProperty]] \u003d medicationRdd\n.map(\n    medication \u003d\u003e ((medication.patientID, medication.medicine), medication)\n)\n.groupByKey()\n.mapValues(_.toSeq.sortBy(_.date).last)\n.flatMap{\n    case((_, medication)) \u003d\u003e List(\n        Edge(\n            medication.patientID.toLong, \n            medication.medicine.##.toLong, \n            PatientMedicationEdgeProperty(medication)\n        ),\n        Edge(\n            medication.medicine.##.toLong,\n            medication.patientID.toLong,\n            PatientMedicationEdgeProperty(medication)\n        )\n    )\n}\nval patientLabEdges: RDD[Edge[EdgeProperty]] \u003d labResultRdd\n.map(\n    labResult \u003d\u003e ((labResult.patientID, labResult.labName), labResult)\n)\n.groupByKey()\n.mapValues(_.toSeq.sortBy(_.date).last)\n.flatMap{\n    case((_, labResult)) \u003d\u003e List(\n        Edge(\n            labResult.patientID.toLong, \n            labResult.labName.##.toLong, \n            PatientLabEdgeProperty(labResult)\n        ),\n        Edge(\n            labResult.labName.##.toLong, \n            labResult.patientID.toLong, \n            PatientLabEdgeProperty(labResult)\n        )\n    )\n}\nval patientDiagnosticEdges: RDD[Edge[EdgeProperty]] \u003d diagnosticRdd\n.map(\n    diagnostic \u003d\u003e ((diagnostic.patientID, diagnostic.icd9code), diagnostic)\n)\n.groupByKey()\n.mapValues(_.toSeq.sortBy(_.date).last)\n.flatMap{\n    case((_, diagnostic)) \u003d\u003e List(\n        Edge(\n            diagnostic.patientID.toLong,\n            diagnostic.icd9code.##.toLong,\n            PatientDiagnosticEdgeProperty(diagnostic)\n        ),\n        Edge(\n            diagnostic.icd9code.##.toLong,\n            diagnostic.patientID.toLong,\n            PatientDiagnosticEdgeProperty(diagnostic)\n        )\n    )\n}\n\nval graphEdges: RDD[Edge[EdgeProperty]] \u003d patientLabEdges.union(\n    patientDiagnosticEdges\n).union(patientMedicationEdges)\nprintln(graphEdges.count())",
+      "user": "anonymous",
+      "dateUpdated": "2019-03-10 17:41:45.724",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "119730\npatientMedicationEdges: org.apache.spark.rdd.RDD[org.apache.spark.graphx.Edge[EdgeProperty]] \u003d MapPartitionsRDD[226] at flatMap at \u003cconsole\u003e:80\npatientLabEdges: org.apache.spark.rdd.RDD[org.apache.spark.graphx.Edge[EdgeProperty]] \u003d MapPartitionsRDD[230] at flatMap at \u003cconsole\u003e:100\npatientDiagnosticEdges: org.apache.spark.rdd.RDD[org.apache.spark.graphx.Edge[EdgeProperty]] \u003d MapPartitionsRDD[234] at flatMap at \u003cconsole\u003e:120\ngraphEdges: org.apache.spark.rdd.RDD[org.apache.spark.graphx.Edge[EdgeProperty]] \u003d UnionRDD[236] at union at \u003cconsole\u003e:137\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1551063153198_2086100869",
+      "id": "20190225-025233_1381146445",
+      "dateCreated": "2019-02-25 02:52:33.198",
+      "dateStarted": "2019-03-10 17:41:46.025",
+      "dateFinished": "2019-03-10 17:41:58.469",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "val graph: Graph[VertexProperty, EdgeProperty] \u003d Graph(\n    graphVertices, graphEdges\n)\ngraph.inDegrees.map{case((_, inDegree)) \u003d\u003e inDegree}.sum\ngraph.outDegrees.map{case((_, outDegree)) \u003d\u003e outDegree}.sum",
+      "user": "anonymous",
+      "dateUpdated": "2019-03-10 17:41:58.483",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "graph: org.apache.spark.graphx.Graph[VertexProperty,EdgeProperty] \u003d org.apache.spark.graphx.impl.GraphImpl@5e566648\nres16: Double \u003d 119730.0\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1551074116364_-1769115628",
+      "id": "20190225-055516_1244856907",
+      "dateCreated": "2019-02-25 05:55:16.368",
+      "dateStarted": "2019-03-10 17:41:58.677",
+      "dateFinished": "2019-03-10 17:42:12.424",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "val trueObjectsCount \u003d patientRdd.count() + diagnosticRdd\n    .map(_.icd9code)\n    .distinct().count() + labResultRdd\n    .map(_.labName)\n    .distinct().count() + medicationRdd\n    .map(_.medicine)\n    .distinct().count()\nval verticesCount \u003d graph.vertices.count()\nprintln(trueObjectsCount \u003d\u003d verticesCount)",
+      "user": "anonymous",
+      "dateUpdated": "2019-03-10 17:43:35.572",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "true\ntrueObjectsCount: Long \u003d 2865\nverticesCount: Long \u003d 2865\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1551076065782_-787429381",
+      "id": "20190225-062745_1137202665",
+      "dateCreated": "2019-02-25 06:27:45.784",
+      "dateStarted": "2019-03-10 17:42:12.770",
+      "dateFinished": "2019-03-10 17:42:17.526",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "val trueEdgeObjectsCount \u003d diagnosticRdd.map(d \u003d\u003e (d.patientID, d.icd9code)).distinct().count() + \n    labResultRdd.map(l \u003d\u003e (l.patientID, l.labName)).distinct().count() +\n    medicationRdd.map(m \u003d\u003e (m.patientID, m.medicine)).distinct().count()\nval edgesCount \u003d graph.edges.count()\nprintln(edgesCount \u003d\u003d trueEdgeObjectsCount * 2)",
+      "user": "anonymous",
+      "dateUpdated": "2019-03-10 18:26:22.971",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "true\ntrueEdgeObjectsCount: Long \u003d 59865\nedgesCount: Long \u003d 119730\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1552236221152_-1751567967",
+      "id": "20190310-164341_2025161271",
+      "dateCreated": "2019-03-10 16:43:41.153",
+      "dateStarted": "2019-03-10 18:26:23.081",
+      "dateFinished": "2019-03-10 18:26:28.085",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "user": "anonymous",
+      "dateUpdated": "2019-03-10 17:42:23.383",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1552236900224_1246246156",
+      "id": "20190310-165500_57515267",
+      "dateCreated": "2019-03-10 16:55:00.224",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    }
+  ],
+  "name": "Homework4",
+  "id": "2E7H2UE3G",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {
+    "spark:shared_process": []
+  },
+  "config": {
+    "isZeppelinNotebookCronEnable": false,
+    "looknfeel": "default",
+    "personalizedMode": "false"
+  },
+  "info": {}
+}

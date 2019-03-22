@@ -1,0 +1,639 @@
+{
+  "paragraphs": [
+    {
+      "text": "val encounterInput \u003d spark.read.format(\"com.databricks.spark.csv\").\n      option(\"header\", \"true\").\n      option(\"mode\", \"DROPMALFORMED\").\n      option(\"delimiter\", \",\").\n      load(\"/mount/homework3/code/data/encounter_INPUT.csv\")\nval encounterDxInput \u003d spark.read.format(\"com.databricks.spark.csv\").\n      option(\"header\", \"true\").\n      option(\"mode\", \"DROPMALFORMED\").\n      option(\"delimiter\", \",\").\n      load(\"/mount/homework3/code/data/encounter_dx_INPUT.csv\")\nval labResultsInput \u003d spark.read.format(\"com.databricks.spark.csv\").\n      option(\"header\", \"true\").\n      option(\"mode\", \"DROPMALFORMED\").\n      option(\"delimiter\", \",\").\n      load(\"/mount/homework3/code/data/lab_results_INPUT.csv\")\nval medicationOrdersInput \u003d spark.read.format(\"com.databricks.spark.csv\").\n      option(\"header\", \"true\").\n      option(\"mode\", \"DROPMALFORMED\").\n      option(\"delimiter\", \",\").\n      load(\"/mount/homework3/code/data/medication_orders_INPUT.csv\")\n\nencounterInput.printSchema()\nencounterDxInput.printSchema()\nlabResultsInput.printSchema()\nmedicationOrdersInput.printSchema()",
+      "user": "anonymous",
+      "dateUpdated": "2019-02-24 21:13:38.208",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {
+          "0": {
+            "graph": {
+              "mode": "table",
+              "height": 208.23529052734375,
+              "optionOpen": false
+            }
+          }
+        },
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "root\n |-- Provider_Org: string (nullable \u003d true)\n |-- Encounter_ID: string (nullable \u003d true)\n |-- Member_ID: string (nullable \u003d true)\n |-- Provider_ID: string (nullable \u003d true)\n |-- Provider_NPI: string (nullable \u003d true)\n |-- Clinic_ID: string (nullable \u003d true)\n |-- Encounter_DateTime: string (nullable \u003d true)\n |-- Encounter_Description: string (nullable \u003d true)\n |-- CC: string (nullable \u003d true)\n |-- Episode_ID: string (nullable \u003d true)\n |-- Patient_DOB: string (nullable \u003d true)\n |-- Patient_Gender: string (nullable \u003d true)\n |-- Facility_Name: string (nullable \u003d true)\n |-- Provider_Name: string (nullable \u003d true)\n |-- Specialty: string (nullable \u003d true)\n |-- Clinic_Type: string (nullable \u003d true)\n |-- lab_orders_count: string (nullable \u003d true)\n |-- lab_results_count: string (nullable \u003d true)\n |-- medication_orders_count: string (nullable \u003d true)\n |-- medication_fulfillment_count: string (nullable \u003d true)\n |-- vital_sign_count: string (nullable \u003d true)\n |-- therapy_orders_count: string (nullable \u003d true)\n |-- therapy_actions_count: string (nullable \u003d true)\n |-- immunization_count: string (nullable \u003d true)\n |-- Has_Appt: string (nullable \u003d true)\n |-- SOAP_Note: string (nullable \u003d true)\n |-- consult_ordered: string (nullable \u003d true)\n |-- Disposition: string (nullable \u003d true)\n\nroot\n |-- Provider_Org: string (nullable \u003d true)\n |-- code: string (nullable \u003d true)\n |-- vocab: string (nullable \u003d true)\n |-- description: string (nullable \u003d true)\n |-- severity: string (nullable \u003d true)\n |-- Encounter_ID: string (nullable \u003d true)\n\nroot\n |-- Provider_Org: string (nullable \u003d true)\n |-- Member_ID: string (nullable \u003d true)\n |-- Date_Collected: string (nullable \u003d true)\n |-- Test_ID: string (nullable \u003d true)\n |-- Specialty: string (nullable \u003d true)\n |-- Panel: string (nullable \u003d true)\n |-- Test_LOINC: string (nullable \u003d true)\n |-- Test_Name: string (nullable \u003d true)\n |-- Date_Resulted: string (nullable \u003d true)\n |-- Specimen: string (nullable \u003d true)\n |-- Result_LOINC: string (nullable \u003d true)\n |-- Result_Name: string (nullable \u003d true)\n |-- Result_Status: string (nullable \u003d true)\n |-- Result_Description: string (nullable \u003d true)\n |-- Numeric_Result: string (nullable \u003d true)\n |-- Units: string (nullable \u003d true)\n |-- Abnormal_Value: string (nullable \u003d true)\n |-- Reference_Range: string (nullable \u003d true)\n |-- Order_ID: string (nullable \u003d true)\n |-- Provider_ID: string (nullable \u003d true)\n |-- Encounter_ID: string (nullable \u003d true)\n\nroot\n |-- Provider_Org: string (nullable \u003d true)\n |-- Member_ID: string (nullable \u003d true)\n |-- Last_Filled_Date: string (nullable \u003d true)\n |-- Drug_Name: string (nullable \u003d true)\n |-- Drug_NDC: string (nullable \u003d true)\n |-- Status: string (nullable \u003d true)\n |-- Sig: string (nullable \u003d true)\n |-- Route: string (nullable \u003d true)\n |-- Dose: string (nullable \u003d true)\n |-- Units: string (nullable \u003d true)\n |-- Order_ID: string (nullable \u003d true)\n |-- Order_Date: string (nullable \u003d true)\n |-- Qty_Ordered: string (nullable \u003d true)\n |-- Refills: string (nullable \u003d true)\n |-- Order_Provider_ID: string (nullable \u003d true)\n |-- Order_Provider_Name: string (nullable \u003d true)\n |-- Medication_Type: string (nullable \u003d true)\n |-- Encounter_ID: string (nullable \u003d true)\n\nencounterInput: org.apache.spark.sql.DataFrame \u003d [Provider_Org: string, Encounter_ID: string ... 26 more fields]\nencounterDxInput: org.apache.spark.sql.DataFrame \u003d [Provider_Org: string, code: string ... 4 more fields]\nlabResultsInput: org.apache.spark.sql.DataFrame \u003d [Provider_Org: string, Member_ID: string ... 19 more fields]\nmedicationOrdersInput: org.apache.spark.sql.DataFrame \u003d [Provider_Org: string, Member_ID: string ... 16 more fields]\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://172.17.0.2:4040/jobs/job?id\u003d0",
+            "http://172.17.0.2:4040/jobs/job?id\u003d1",
+            "http://172.17.0.2:4040/jobs/job?id\u003d2",
+            "http://172.17.0.2:4040/jobs/job?id\u003d3"
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1549637643433_277311305",
+      "id": "20190208-145403_337752139",
+      "dateCreated": "2019-02-08 14:54:03.433",
+      "dateStarted": "2019-02-24 21:13:38.727",
+      "dateFinished": "2019-02-24 21:14:19.262",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "import org.apache.spark.sql.types.StringType\nimport org.apache.spark.sql.types.DateType\nimport org.apache.spark.sql.types.DoubleType\nimport org.apache.spark.rdd.RDD\nimport spark.implicits._\n\nval diagnostic: RDD[Diagnostic] \u003d encounterInput\n    .join(encounterDxInput, Seq(\"Encounter_ID\"))\n    .select(\n        $\"Member_ID\".alias(\"patientId\").cast(StringType),\n        $\"Encounter_DateTime\".alias(\"date\").cast(DateType),\n        $\"code\".alias(\"code\").cast(StringType)\n    )\n    .as[Diagnostic]\n    .rdd\nval labResult: RDD[LabResult] \u003d labResultsInput\n    .filter($\"Numeric_Result\".isNotNull)\n    .select(\n        $\"Member_ID\".alias(\"patientId\").cast(StringType),\n        $\"Date_Resulted\".alias(\"date\").cast(DateType),\n        $\"Result_Name\".alias(\"testName\").cast(StringType),\n        $\"Numeric_Result\".alias(\"value\").cast(StringType)\n    )\n    .map(row \u003d\u003e LabResult(row.getString(0), row.getDate(1), row.getString(2), row.getString(3).replace(\",\", \"\").toDouble))\n    .rdd\nval medication: RDD[Medication] \u003d encounterInput\n    .join(medicationOrdersInput, Seq(\"Encounter_ID\", \"Member_ID\"))\n    .select(\n        $\"Member_ID\".alias(\"patientId\").cast(StringType),\n        $\"Order_Date\".alias(\"date\").cast(DateType),\n        $\"Drug_Name\".alias(\"medicine\").cast(StringType)\n    )\n    .as[Medication]\n    .rdd\n\nimport java.sql.Date\ncase class Diagnostic(patientID: String, date: Date, code: String)\ncase class LabResult(patientID: String, date: Date, testName: String, value: Double)\ncase class Medication(patientID: String, date: Date, medicine: String)\n    \ndiagnostic.toDF().printSchema()\nlabResult.toDF().printSchema()\nmedication.toDF().printSchema()",
+      "user": "anonymous",
+      "dateUpdated": "2019-02-24 21:14:19.348",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "root\n |-- patientID: string (nullable \u003d true)\n |-- date: date (nullable \u003d true)\n |-- code: string (nullable \u003d true)\n\nroot\n |-- patientID: string (nullable \u003d true)\n |-- date: date (nullable \u003d true)\n |-- testName: string (nullable \u003d true)\n |-- value: double (nullable \u003d false)\n\nroot\n |-- patientID: string (nullable \u003d true)\n |-- date: date (nullable \u003d true)\n |-- medicine: string (nullable \u003d true)\n\nimport org.apache.spark.sql.types.StringType\nimport org.apache.spark.sql.types.DateType\nimport org.apache.spark.sql.types.DoubleType\nimport org.apache.spark.rdd.RDD\nimport spark.implicits._\ndiagnostic: org.apache.spark.rdd.RDD[Diagnostic] \u003d MapPartitionsRDD[38] at rdd at \u003cconsole\u003e:32\nlabResult: org.apache.spark.rdd.RDD[LabResult] \u003d MapPartitionsRDD[43] at rdd at \u003cconsole\u003e:42\nmedication: org.apache.spark.rdd.RDD[Medication] \u003d MapPartitionsRDD[50] at rdd at \u003cconsole\u003e:51\nimport java.sql.Date\ndefined class Diagnostic\ndefined class LabResult\ndefined class Medication\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://172.17.0.2:4040/jobs/job?id\u003d4",
+            "http://172.17.0.2:4040/jobs/job?id\u003d5"
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1549637796132_-1925176063",
+      "id": "20190208-145636_1614365110",
+      "dateCreated": "2019-02-08 14:56:36.133",
+      "dateStarted": "2019-02-24 21:14:19.985",
+      "dateFinished": "2019-02-24 21:14:32.323",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "import org.apache.spark.sql.functions.countDistinct\ndiagnostic.toDF().agg(countDistinct(\"patientId\")).show()\nlabResult.toDF().agg(countDistinct(\"patientId\")).show()\nmedication.toDF().agg(countDistinct(\"patientId\")).show()",
+      "user": "anonymous",
+      "dateUpdated": "2019-02-24 21:14:32.334",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+-------------------------+\n|count(DISTINCT patientId)|\n+-------------------------+\n|                     3688|\n+-------------------------+\n\n+-------------------------+\n|count(DISTINCT patientId)|\n+-------------------------+\n|                     3687|\n+-------------------------+\n\n+-------------------------+\n|count(DISTINCT patientId)|\n+-------------------------+\n|                     3641|\n+-------------------------+\n\nimport org.apache.spark.sql.functions.countDistinct\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://172.17.0.2:4040/jobs/job?id\u003d6",
+            "http://172.17.0.2:4040/jobs/job?id\u003d7",
+            "http://172.17.0.2:4040/jobs/job?id\u003d8"
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1549809845417_2061652087",
+      "id": "20190210-144405_56442848",
+      "dateCreated": "2019-02-10 14:44:05.418",
+      "dateStarted": "2019-02-24 21:14:32.756",
+      "dateFinished": "2019-02-24 21:14:55.818",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "val T1DM_DX \u003d Set(\n    \"250.01\", \"250.03\", \"250.11\", \"250.13\", \"250.21\", \"250.23\", \"250.31\", \"250.33\", \"250.41\", \"250.43\",\n    \"250.51\", \"250.53\", \"250.61\", \"250.63\", \"250.71\", \"250.73\", \"250.81\", \"250.83\", \"250.91\", \"250.93\"\n)\nval T2DM_DX \u003d Set(\"250.3\", \"250.32\", \"250.2\", \"250.22\", \"250.9\", \"250.92\", \"250.8\", \"250.82\", \"250.7\", \"250.72\", \"250.6\",\n    \"250.62\", \"250.5\", \"250.52\", \"250.4\", \"250.42\", \"250.00\", \"250.02\")\n    \nval T1DM_MED \u003d Set(\"lantus\", \"insulin glargine\", \"insulin aspart\", \"insulin detemir\", \"insulin lente\", \"insulin nph\", \"insulin reg\", \"insulin,ultralente\")\n\nval T2DM_MED \u003d Set(\"chlorpropamide\", \"diabinese\", \"diabanase\", \"diabinase\", \"glipizide\", \"glucotrol\", \"glucotrol xl\",\n    \"glucatrol \", \"glyburide\", \"micronase\", \"glynase\", \"diabetamide\", \"diabeta\", \"glimepiride\", \"amaryl\",\n    \"repaglinide\", \"prandin\", \"nateglinide\", \"metformin\", \"rosiglitazone\", \"pioglitazone\", \"acarbose\",\n    \"miglitol\", \"sitagliptin\", \"exenatide\", \"tolazamide\", \"acetohexamide\", \"troglitazone\", \"tolbutamide\",\n    \"avandia\", \"actos\", \"actos\", \"glipizide\")\n    \nval T1DM_MEDandT2DM_MED \u003d T1DM_MED ++ T2DM_MED\n    \nval patientDiagnosis \u003d diagnostic\n    .map(diagnostic \u003d\u003e (diagnostic.patientID, diagnostic.code))\n    .groupByKey()\n    .filter(patientDiagnostic \u003d\u003e (T1DM_DX \u0026 patientDiagnostic._2.toSet).isEmpty)\n    .filter(patientDiagnostic \u003d\u003e !(T2DM_DX \u0026 patientDiagnostic._2.toSet).isEmpty)\nprintln(patientDiagnosis.count())",
+      "user": "anonymous",
+      "dateUpdated": "2019-02-24 21:14:55.836",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {
+          "0": {
+            "graph": {
+              "mode": "table",
+              "height": 84.92646789550781,
+              "optionOpen": false
+            }
+          }
+        },
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "1265\nT1DM_DX: scala.collection.immutable.Set[String] \u003d Set(250.01, 250.81, 250.31, 250.91, 250.63, 250.23, 250.43, 250.21, 250.73, 250.33, 250.51, 250.11, 250.61, 250.03, 250.83, 250.71, 250.41, 250.53, 250.13, 250.93)\nT2DM_DX: scala.collection.immutable.Set[String] \u003d Set(250.42, 250.8, 250.2, 250.92, 250.52, 250.32, 250.00, 250.7, 250.62, 250.22, 250.5, 250.6, 250.72, 250.4, 250.9, 250.02, 250.3, 250.82)\nT1DM_MED: scala.collection.immutable.Set[String] \u003d Set(insulin lente, insulin detemir, insulin aspart, insulin nph, insulin,ultralente, lantus, insulin reg, insulin glargine)\nT2DM_MED: scala.collection.immutable.Set[String] \u003d Set(miglitol, troglitazone, glyburide, glimepiride, amaryl, glucotrol, tolbutamide, exenatide, glucotrol xl, actos, repaglinide, glynase, chlorpropamide, diabinase, pr..."
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://172.17.0.2:4040/jobs/job?id\u003d9"
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1549652095573_-1807333953",
+      "id": "20190208-185455_1524413849",
+      "dateCreated": "2019-02-08 18:54:55.579",
+      "dateStarted": "2019-02-24 21:14:56.162",
+      "dateFinished": "2019-02-24 21:15:00.243",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "val patientMedHadDiag1And2: RDD[(String, Seq[String])] \u003d medication\n    .filter(medication \u003d\u003e T1DM_MEDandT2DM_MED.contains(medication.medicine.toLowerCase))\n    .sortBy(medication \u003d\u003e medication.date.getTime())\n    .map(medication \u003d\u003e (\n        medication.patientID, \n        medication.medicine.toLowerCase\n    ))\n    .groupByKey()\n    .rightOuterJoin(patientDiagnosis)\n    .map(tuplet \u003d\u003e (\n        tuplet._1, \n        tuplet._2._1.getOrElse(Iterable.empty[String]).toSeq\n    ))\n    .cache()\n    \nval casePatients: RDD[(String, Int)] \u003d patientMedHadDiag1And2\n    .filter(patientMedHadDiag1And2 \u003d\u003e (T1DM_MED \u0026 patientMedHadDiag1And2._2.toSet).isEmpty)\n    .union(\n        patientMedHadDiag1And2\n            .filter(patientMedHadDiag1And2 \u003d\u003e !(T1DM_MED \u0026 patientMedHadDiag1And2._2.toSet).isEmpty)\n            .filter(patientMedHadDiag1And2 \u003d\u003e (T2DM_MED \u0026 patientMedHadDiag1And2._2.toSet).isEmpty)\n    )\n    .union(\n        patientMedHadDiag1And2\n            .filter(patientMedHadDiag1And2 \u003d\u003e !(T1DM_MED \u0026 patientMedHadDiag1And2._2.toSet).isEmpty)\n            .filter(patientMedHadDiag1And2 \u003d\u003e !(T2DM_MED \u0026 patientMedHadDiag1And2._2.toSet).isEmpty)\n            .filter(patientMedHadDiag1And2 \u003d\u003e T2DM_MED.contains(patientMedHadDiag1And2._2.head))\n    )\n    .map(patientMedHadDiag1And2 \u003d\u003e (patientMedHadDiag1And2._1, 1))\n    .reduceByKey((tuplet, _) \u003d\u003e 1)\n    \ncasePatients.count()",
+      "user": "anonymous",
+      "dateUpdated": "2019-02-24 21:15:00.334",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "patientMedHadDiag1And2: org.apache.spark.rdd.RDD[(String, Seq[String])] \u003d MapPartitionsRDD[91] at map at \u003cconsole\u003e:55\ncasePatients: org.apache.spark.rdd.RDD[(String, Int)] \u003d ShuffledRDD[101] at reduceByKey at \u003cconsole\u003e:75\nres5: Long \u003d 976\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://172.17.0.2:4040/jobs/job?id\u003d10"
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1549727186926_752511365",
+      "id": "20190209-154626_1741605827",
+      "dateCreated": "2019-02-09 15:46:26.935",
+      "dateStarted": "2019-02-24 21:15:00.710",
+      "dateFinished": "2019-02-24 21:15:13.209",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "val controlPatients: RDD[(String, Int)] \u003d labResult\n    .filter(labResult \u003d\u003e labResult.testName.toLowerCase.contains(\"glucose\"))\n    .map(labResult \u003d\u003e labResult.patientID)\n    .distinct()\n    .subtract(\n        labResult\n            .filter(labResult \u003d\u003e {\n                val testName \u003d labResult.testName.toLowerCase\n                val testValue \u003d labResult.value\n                \n                (testName \u003d\u003d \"glucose\" \u0026\u0026 testValue \u003e 110) || \n                (testName \u003d\u003d \"fasting glucose\" \u0026\u0026 testValue \u003e\u003d 110) ||\n                (testName \u003d\u003d \"fasting blood glucose\" \u0026\u0026 testValue \u003e\u003d 110) ||\n                (testName \u003d\u003d \"fasting plasma glucose\" \u0026\u0026 testValue \u003e\u003d 110) || \n                (testName \u003d\u003d \"glucose, serum\" \u0026\u0026 testValue \u003e 110) ||\n                (testName \u003d\u003d \"hba1c\" \u0026\u0026 testValue \u003e\u003d 6.0) || \n                (testName \u003d\u003d \"hemoglobin a1c\" \u0026\u0026 testValue \u003e\u003d 6.0)\n            })\n            .map(labResult \u003d\u003e labResult.patientID)\n            .distinct()\n    )\n    .subtract(\n        diagnostic\n            .filter(diagnostic \u003d\u003e List(\n                \"790.21\", \"790.22\", \"790.29\", \"791.5\",\n                \"648.80\", \"277.7\", \"790.29\"\n            ).contains(diagnostic.code) || diagnostic.code.replaceAll(\"\\\\..*\", \"\") \u003d\u003d \"250\")\n            .map(diagnostic \u003d\u003e diagnostic.patientID)\n            .distinct()\n    )\n    .map(patientId \u003d\u003e (patientId, 2))\n    \ncontrolPatients.count()",
+      "user": "anonymous",
+      "dateUpdated": "2019-02-24 21:15:13.212",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "controlPatients: org.apache.spark.rdd.RDD[(String, Int)] \u003d MapPartitionsRDD[125] at map at \u003cconsole\u003e:69\nres6: Long \u003d 948\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://172.17.0.2:4040/jobs/job?id\u003d11"
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1549853828563_1679631970",
+      "id": "20190211-025708_1367068452",
+      "dateCreated": "2019-02-11 02:57:08.564",
+      "dateStarted": "2019-02-24 21:15:13.590",
+      "dateFinished": "2019-02-24 21:15:20.102",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "val others: RDD[(String, Int)] \u003d diagnostic\n    .map(diagnostic \u003d\u003e diagnostic.patientID)\n    .distinct()\n    .subtract(\n        controlPatients.map(_._1)\n    )\n    .subtract(\n        casePatients.map(_._1)\n    )\n    .map(patientId \u003d\u003e (patientId, 3))\n    \nothers.count()",
+      "user": "anonymous",
+      "dateUpdated": "2019-02-24 21:15:20.153",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "others: org.apache.spark.rdd.RDD[(String, Int)] \u003d MapPartitionsRDD[140] at map at \u003cconsole\u003e:62\nres7: Long \u003d 1764\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://172.17.0.2:4040/jobs/job?id\u003d12"
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1549976632007_-1715803585",
+      "id": "20190212-130352_1642700721",
+      "dateCreated": "2019-02-12 13:03:52.007",
+      "dateStarted": "2019-02-24 21:15:20.424",
+      "dateFinished": "2019-02-24 21:15:22.869",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "val diagnosticFeatureTuple: RDD[((String, String), Double)] \u003d diagnostic\n    .map(diagnostic \u003d\u003e (diagnostic.patientID, diagnostic.code))\n    .map((_, 1.0))\n    .reduceByKey(_ + _)\n    \ndiagnosticFeatureTuple.take(5)",
+      "user": "anonymous",
+      "dateUpdated": "2019-02-24 21:15:22.941",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "diagnosticFeatureTuple: org.apache.spark.rdd.RDD[((String, String), Double)] \u003d ShuffledRDD[143] at reduceByKey at \u003cconsole\u003e:40\nres8: Array[((String, String), Double)] \u003d Array(((000794604-01,401.9),10.0), ((000703103-01,V70.0),9.0), ((510350000-01,428.0),12.0), ((503009204-01,590.80),9.0), ((000257456-01,428.0),12.0))\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://172.17.0.2:4040/jobs/job?id\u003d13"
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1549978806898_24671603",
+      "id": "20190212-134006_551060534",
+      "dateCreated": "2019-02-12 13:40:06.898",
+      "dateStarted": "2019-02-24 21:15:23.147",
+      "dateFinished": "2019-02-24 21:15:25.636",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "val medicationFeatureTuple: RDD[((String, String), Double)] \u003d medication\n    .map(medication \u003d\u003e (medication.patientID, medication.medicine))\n    .map((_, 1.0))\n    .reduceByKey(_ + _)\n    \nmedicationFeatureTuple.take(5)",
+      "user": "anonymous",
+      "dateUpdated": "2019-02-24 21:15:25.664",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "medicationFeatureTuple: org.apache.spark.rdd.RDD[((String, String), Double)] \u003d ShuffledRDD[146] at reduceByKey at \u003cconsole\u003e:40\nres9: Array[((String, String), Double)] \u003d Array(((000437764-01,Metoprolol),1.0), ((000206451-01,enalapril),1.0), ((000345170-01,Metoprolol),1.0), ((000596001-01,Potassium Chl),1.0), ((000845573-01,Levofloxacin),1.0))\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://172.17.0.2:4040/jobs/job?id\u003d14"
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1549980261129_-644082316",
+      "id": "20190212-140421_839770146",
+      "dateCreated": "2019-02-12 14:04:21.129",
+      "dateStarted": "2019-02-24 21:15:25.845",
+      "dateFinished": "2019-02-24 21:15:28.307",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "val labFeatureTuple \u003d labResult\n    .map(labResult \u003d\u003e ((labResult.patientID, labResult.testName), (labResult.value, 1.0)))\n    .reduceByKey((tuplet1, tuplet2) \u003d\u003e (tuplet1._1 + tuplet2._1, tuplet1._2 + tuplet2._2))\n    .mapValues(tuplet \u003d\u003e tuplet._1 / tuplet._2)\n    \nlabFeatureTuple.take(5)",
+      "user": "anonymous",
+      "dateUpdated": "2019-02-24 21:15:28.360",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "labFeatureTuple: org.apache.spark.rdd.RDD[((String, String), Double)] \u003d MapPartitionsRDD[149] at mapValues at \u003cconsole\u003e:39\nres10: Array[((String, String), Double)] \u003d Array(((000231827-01,LDL),120.0), ((353170000-01,WBC),15000.0), ((000501514-01,BUN),30.0), ((000550567-01,LDL),120.0), ((000498081-01,T score hip),-0.01))\n"
+          }
+        ]
+      },
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            "http://172.17.0.2:4040/jobs/job?id\u003d15"
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "apps": [],
+      "jobName": "paragraph_1549981934290_-761819397",
+      "id": "20190212-143214_1416214264",
+      "dateCreated": "2019-02-12 14:32:14.291",
+      "dateStarted": "2019-02-24 21:15:28.515",
+      "dateFinished": "2019-02-24 21:15:31.170",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "import scala.collection.mutable.Map\nval distinctFeatureNames \u003d labFeatureTuple\n    .map(tuplet \u003d\u003e tuplet._1._2)\n    .distinct()\n    .collect()\nval distinctFeatureNames\n\nval featureNameIdMap \u003d Map[String, Int]()\nfor (index \u003c- distinctFeatureNames.indices) {\n    featureNameIdMap(distinctFeatureNames(index)) \u003d index\n}",
+      "user": "anonymous",
+      "dateUpdated": "2019-02-24 21:15:31.235",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "ERROR",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\u003cconsole\u003e:8: error: \u0027\u003d\u0027 expected but \u0027;\u0027 found.\nval featureNameIdMap \u003d Map[String, Int]()\n^\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1549982050508_-556757768",
+      "id": "20190212-143410_1626304248",
+      "dateCreated": "2019-02-12 14:34:10.508",
+      "dateStarted": "2019-02-24 21:15:31.404",
+      "dateFinished": "2019-02-24 21:15:31.486",
+      "status": "ERROR",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "import org.apache.spark.mllib.linalg.Vectors\nlabFeatureTuple\n    .map(tuplet \u003d\u003e (tuplet._1._1, (featureNameIdMap(tuplet._1._2), tuplet._2)))\n    .groupByKey()\n    .mapValues(tupletIterable \u003d\u003e {\n        val vectorLength \u003d distinctFeatureNames.length\n        val vectorElements \u003d Array[Double](vectorLength)\n        \n        for (tuplet \u003c- tupletIterable) {\n            vectorElements(tuplet._1) \u003d tuplet._2\n        }\n        \n        Vectors.sparse(vectorLength, distinctFeatureNames.indices.toArray, vectorElements)\n    });",
+      "user": "anonymous",
+      "dateUpdated": "2019-02-13 03:21:47.525",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "import org.apache.spark.mllib.linalg.Vectors\nres16: org.apache.spark.rdd.RDD[(String, org.apache.spark.mllib.linalg.Vector)] \u003d MapPartitionsRDD[156] at mapValues at \u003cconsole\u003e:48\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1549984201056_1002501392",
+      "id": "20190212-151001_136940784",
+      "dateCreated": "2019-02-12 15:10:01.059",
+      "dateStarted": "2019-02-13 03:21:47.601",
+      "dateFinished": "2019-02-13 03:21:48.578",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "user": "anonymous",
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1549992568668_1668900232",
+      "id": "20190212-172928_1937244278",
+      "dateCreated": "2019-02-12 17:29:28.680",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    }
+  ],
+  "name": "Homework3",
+  "id": "2E4Q3SXDR",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {
+    "spark:shared_process": []
+  },
+  "config": {
+    "isZeppelinNotebookCronEnable": false
+  },
+  "info": {}
+}
